@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, UploadFile, HTTPException
+from fastapi import APIRouter, Depends, UploadFile, HTTPException, BackgroundTasks
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
-from app.models import Document, ProcessingStatus
+from app.models import Document
 from app.schemas import DocumentResponse, DocumentDetail
 from app.services.documents import create_document
 
@@ -11,22 +12,25 @@ router = APIRouter()
 
 
 @router.post("/documents")
-async def upload_document(file: UploadFile, db: AsyncSession = Depends(get_db)):
-    document = await create_document(file, db)
+async def upload_document(
+    file: UploadFile,
+    background_tasks: BackgroundTasks,
+    db: AsyncSession = Depends(get_db),
+):
+    document = await create_document(file, db, background_tasks)
     return {"id": document.id, "filename": document.filename}
 
 
 @router.get("/documents")
 async def list_documents(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Document))
+    result = await db.execute(
+        select(Document).options(selectinload(Document.processing_status))
+    )
     documents = result.scalars().all()
 
     response = []
     for doc in documents:
-        status_result = await db.execute(
-            select(ProcessingStatus).where(ProcessingStatus.document_id == doc.id)
-        )
-        status = status_result.scalar_one_or_none()
+        status = doc.processing_status
         response.append(
             DocumentResponse(
                 id=doc.id,
@@ -49,10 +53,8 @@ async def get_document(document_id: int, db: AsyncSession = Depends(get_db)):
     if not document:
         raise HTTPException(status_code=404, detail="Document not found")
 
-    status_result = await db.execute(
-        select(ProcessingStatus).where(ProcessingStatus.document_id == document.id)
-    )
-    status = status_result.scalar_one_or_none()
+    await db.refresh(document, attribute_names=["processing_status"])
+    status = document.processing_status
 
     return DocumentDetail(
         id=document.id,
@@ -72,13 +74,6 @@ async def delete_document(document_id: int, db: AsyncSession = Depends(get_db)):
 
     if not document:
         raise HTTPException(status_code=404, detail="Document not found")
-
-    status_result = await db.execute(
-        select(ProcessingStatus).where(ProcessingStatus.document_id == document.id)
-    )
-    status = status_result.scalar_one_or_none()
-    if status:
-        await db.delete(status)
 
     await db.delete(document)
     await db.commit()
