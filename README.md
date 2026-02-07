@@ -9,6 +9,7 @@ A simple document processing system for uploading, viewing, and searching PDF do
 - Search across document content
 - View individual document details with extracted text
 - Delete documents
+- Add tags to documents and filter by tag
 
 ## Tech Stack
 
@@ -59,6 +60,14 @@ npm install
 npm run dev
 ```
 
+## Testing
+
+Run backend tests:
+
+```bash
+python3 -m pytest backend/tests
+```
+
 ## API Endpoints
 
 ### Documents
@@ -69,6 +78,14 @@ npm run dev
 | GET | `/documents` | List all documents |
 | GET | `/documents/{id}` | Get document details |
 | DELETE | `/documents/{id}` | Delete a document |
+| POST | `/documents/{id}/tags` | Add a tag to a document |
+| DELETE | `/documents/{id}/tags/{tag_id}` | Remove a tag from a document |
+
+### Tags
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/tags` | List all tags |
 
 ### Search
 
