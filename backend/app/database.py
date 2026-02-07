@@ -26,3 +26,16 @@ async def init_db():
                 "ON documents USING GIN (content gin_trgm_ops);"
             )
         )
+        await conn.execute(
+            text(
+                "ALTER TABLE processing_statuses "
+                "DROP CONSTRAINT IF EXISTS processing_statuses_document_id_fkey;"
+            )
+        )
+        await conn.execute(
+            text(
+                "ALTER TABLE processing_statuses "
+                "ADD CONSTRAINT processing_statuses_document_id_fkey "
+                "FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE CASCADE;"
+            )
+        )
