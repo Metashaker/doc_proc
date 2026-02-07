@@ -57,3 +57,15 @@ async def test_save_upload_success(tmp_path):
     assert original == "ok.pdf"
     assert size == 7
     assert tmp_path.joinpath(file_path.split("/")[-1]).exists()
+
+
+@pytest.mark.asyncio
+async def test_save_upload_rejects_empty_file(tmp_path):
+    upload = UploadFile(
+        filename="empty.pdf",
+        file=io.BytesIO(b""),
+        headers=Headers({"content-type": "application/pdf"}),
+    )
+    with pytest.raises(HTTPException) as excinfo:
+        await save_upload(upload, str(tmp_path), max_bytes=1024)
+    assert excinfo.value.status_code == 400
