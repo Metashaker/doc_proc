@@ -24,6 +24,11 @@ export async function getDocuments() {
   return handleJsonResponse(response);
 }
 
+export async function getDocumentsByTag(tag) {
+  const response = await fetch(`${API_BASE}/documents?tag=${encodeURIComponent(tag)}`);
+  return handleJsonResponse(response);
+}
+
 export async function getDocument(id) {
   const response = await fetch(`${API_BASE}/documents/${id}`);
   return handleJsonResponse(response);
@@ -38,5 +43,28 @@ export async function deleteDocument(id) {
 
 export async function searchDocuments(query) {
   const response = await fetch(`${API_BASE}/search?q=${encodeURIComponent(query)}`);
+  return handleJsonResponse(response);
+}
+
+export async function getTags() {
+  const response = await fetch(`${API_BASE}/tags`);
+  return handleJsonResponse(response);
+}
+
+export async function addTag(documentId, name) {
+  const response = await fetch(`${API_BASE}/documents/${documentId}/tags`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ name }),
+  });
+  return handleJsonResponse(response);
+}
+
+export async function removeTag(documentId, tagId) {
+  const response = await fetch(`${API_BASE}/documents/${documentId}/tags/${tagId}`, {
+    method: 'DELETE',
+  });
   return handleJsonResponse(response);
 }
