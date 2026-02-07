@@ -14,6 +14,7 @@ def test_build_search_query_binds_params():
     sql, params = build_search_query("report")
     assert ":pattern" in str(sql)
     assert "substring" in str(sql).lower()
+    assert "tags" in str(sql).lower()
     assert params["pattern"].startswith("%")
 
 
