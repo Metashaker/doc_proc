@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { searchDocuments } from '../api'
 
@@ -7,25 +7,45 @@ function SearchBar() {
   const [results, setResults] = useState([])
   const [showResults, setShowResults] = useState(false)
   const [searching, setSearching] = useState(false)
+  const [error, setError] = useState(null)
+  const containerRef = useRef(null)
 
   async function handleSearch(e) {
     e.preventDefault()
-    if (!query.trim()) return
+    if (!query.trim()) {
+      setResults([])
+      setError(null)
+      setShowResults(true)
+      return
+    }
 
     try {
       setSearching(true)
+      setError(null)
       const data = await searchDocuments(query)
       setResults(data)
       setShowResults(true)
     } catch (err) {
-      console.error('Search failed:', err)
+      setError(err.message || 'Search failed')
+      setResults([])
+      setShowResults(true)
     } finally {
       setSearching(false)
     }
   }
 
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setShowResults(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
   return (
-    <div className="search-container">
+    <div className="search-container" ref={containerRef}>
       <form className="search-bar" onSubmit={handleSearch}>
         <input
           type="text"
@@ -40,7 +60,9 @@ function SearchBar() {
       </form>
       {showResults && (
         <div className="search-results">
-          {results.length === 0 ? (
+          {error ? (
+            <div className="result-item error">{error}</div>
+          ) : results.length === 0 ? (
             <div className="result-item">No results found</div>
           ) : (
             results.map(result => (

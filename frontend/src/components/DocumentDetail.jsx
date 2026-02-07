@@ -19,7 +19,7 @@ function DocumentDetail() {
       const data = await getDocument(id)
       setDocument(data)
     } catch (err) {
-      setError('Failed to load document')
+      setError(err.message || 'Failed to load document')
     } finally {
       setLoading(false)
     }
@@ -33,7 +33,7 @@ function DocumentDetail() {
       await deleteDocument(id)
       navigate('/')
     } catch (err) {
-      setError('Failed to delete document')
+      setError(err.message || 'Failed to delete document')
     }
   }
 

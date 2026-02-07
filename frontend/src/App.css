@@ -217,6 +217,12 @@ body {
 .search-results .result-item {
   padding: 1rem;
   border-bottom: 1px solid #eee;
+  color: #333;
+}
+
+.search-results .result-item.error {
+  color: #c0392b;
+  background-color: #fadbd8;
 }
 
 .search-results .result-item:last-child {
@@ -258,3 +264,4 @@ body {
   padding: 3rem;
   color: #7f8c8d;
 }
+
