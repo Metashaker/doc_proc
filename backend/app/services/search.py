@@ -8,7 +8,7 @@ def _escape_like(value: str) -> str:
 def build_search_query(query: str):
     pattern = f"%{_escape_like(query)}%"
     sql = text(
-        "SELECT id, filename, content FROM documents "
-        "WHERE content ILIKE :pattern ESCAPE '\\'"
+        "SELECT id, filename, substring(coalesce(content, '') from 1 for 200) AS snippet "
+        "FROM documents WHERE content ILIKE :pattern ESCAPE '\\'"
     )
     return sql, {"pattern": pattern}

@@ -16,8 +16,7 @@ async def search_documents(q: str, db: AsyncSession = Depends(get_db)):
 
     results = []
     for row in rows:
-        content = row[2] or ""
-        snippet = content[:200] + "..." if len(content) > 200 else content
+        snippet = row[2] or ""
         results.append(
             SearchResult(
                 id=row[0],
