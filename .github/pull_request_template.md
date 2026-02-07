@@ -6,4 +6,4 @@
 ## Testing
 
 
-## Screeshots
+## Screenhots
