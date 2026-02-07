@@ -87,6 +87,34 @@ body {
   font-size: 1.25rem;
 }
 
+.document-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding: 1rem 1.5rem;
+  gap: 1rem;
+}
+
+.document-list-header h2 {
+  padding: 0;
+  border-bottom: none;
+}
+
+.tag-filter {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  color: #7f8c8d;
+  font-size: 0.875rem;
+}
+
+.tag-filter select {
+  padding: 0.35rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
 .document-item {
   padding: 1rem 1.5rem;
   border-bottom: 1px solid #eee;
@@ -112,6 +140,32 @@ body {
 .document-meta {
   color: #7f8c8d;
   font-size: 0.875rem;
+}
+
+.tag-list {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag-pill {
+  background-color: #eef2f7;
+  color: #2c3e50;
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.tag-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #7f8c8d;
+  font-size: 0.85rem;
 }
 
 .document-detail {
@@ -141,6 +195,91 @@ body {
   font-size: 0.875rem;
   max-height: 500px;
   overflow-y: auto;
+}
+
+.tag-section {
+  margin-top: 1.5rem;
+}
+
+.tag-form {
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tag-input-wrapper {
+  position: relative;
+  flex: 1;
+}
+
+.tag-form input {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.tag-suggestions {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+  z-index: 10;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.tag-suggestion {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  background: white;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #111;
+  appearance: none;
+}
+
+.tag-suggestion:hover,
+.tag-suggestion:focus {
+  background-color: #3498db;
+  color: #fff;
+}
+
+.tag-suggestion.empty {
+  color: #7f8c8d;
+  cursor: default;
+}
+
+.tag-submit {
+  padding: 0.5rem 1rem;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.tag-suggestions button {
+  background: white;
+  color: #111;
+}
+
+.tag-suggestions button:hover,
+.tag-suggestions button:focus {
+  background: #3498db;
+  color: #fff;
+}
+
+.tag-empty {
+  color: #7f8c8d;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
 }
 
 .document-detail .actions {
