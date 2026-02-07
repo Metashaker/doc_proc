@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { getDocuments } from '../api'
 
-function DocumentList() {
+function DocumentList({ refreshKey }) {
   const [documents, setDocuments] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   useEffect(() => {
     loadDocuments()
-  }, [])
+  }, [refreshKey])
 
   async function loadDocuments() {
     try {
@@ -17,7 +17,7 @@ function DocumentList() {
       const data = await getDocuments()
       setDocuments(data)
     } catch (err) {
-      setError('Failed to load documents')
+      setError(err.message || 'Failed to load documents')
     } finally {
       setLoading(false)
     }

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { uploadDocument } from '../api'
 
-function UploadForm() {
+function UploadForm({ onUpload }) {
   const [file, setFile] = useState(null)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState(null)
@@ -16,9 +16,11 @@ function UploadForm() {
       await uploadDocument(file)
       setFile(null)
       e.target.reset()
-      window.location.reload()
+      if (onUpload) {
+        await onUpload()
+      }
     } catch (err) {
-      setError('Failed to upload document')
+      setError(err.message || 'Failed to upload document')
     } finally {
       setUploading(false)
     }
@@ -31,6 +33,7 @@ function UploadForm() {
       <form onSubmit={handleSubmit}>
         <input
           type="file"
+          accept="application/pdf"
           onChange={(e) => setFile(e.target.files[0])}
           disabled={uploading}
         />
