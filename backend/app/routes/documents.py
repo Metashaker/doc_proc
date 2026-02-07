@@ -4,7 +4,7 @@ from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
-from app.models import Document, Tag
+from app.models import Document, Tag, ProcessingStatus
 from app.schemas import DocumentResponse, DocumentDetail, TagResponse, TagCreate, TagSummary
 from app.services.documents import create_document
 
@@ -129,12 +129,18 @@ async def remove_tag(document_id: int, tag_id: int, db: AsyncSession = Depends(g
 
 @router.delete("/documents/{document_id}")
 async def delete_document(document_id: int, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Document).where(Document.id == document_id))
+    result = await db.execute(
+        select(Document)
+        .where(Document.id == document_id)
+        .options(selectinload(Document.processing_status))
+    )
     document = result.scalar_one_or_none()
 
     if not document:
         raise HTTPException(status_code=404, detail="Document not found")
 
+    if document.processing_status:
+        await db.delete(document.processing_status)
     await db.delete(document)
     await db.commit()
 
