@@ -1,6 +1,3 @@
-import os
-from datetime import datetime
-
 from fastapi import APIRouter, Depends, UploadFile, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -8,42 +5,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.models import Document, ProcessingStatus
 from app.schemas import DocumentResponse, DocumentDetail
-from app.services.pdf_processor import extract_text_from_pdf
-from app.config import settings
+from app.services.documents import create_document
 
 router = APIRouter()
 
 
 @router.post("/documents")
 async def upload_document(file: UploadFile, db: AsyncSession = Depends(get_db)):
-    os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
-    file_path = os.path.join(settings.UPLOAD_DIR, file.filename)
-
-    with open(file_path, "wb") as f:
-        content = await file.read()
-        f.write(content)
-
-    file_size = len(content)
-    text_content, page_count = await extract_text_from_pdf(file_path)
-
-    document = Document(
-        filename=file.filename,
-        content=text_content,
-        file_size=file_size,
-        page_count=page_count,
-    )
-    db.add(document)
-    await db.commit()
-    await db.refresh(document)
-
-    processing_status = ProcessingStatus(
-        document_id=document.id,
-        status="completed",
-        processed_at=datetime.utcnow(),
-    )
-    db.add(processing_status)
-    await db.commit()
-
+    document = await create_document(file, db)
     return {"id": document.id, "filename": document.filename}
 
 
