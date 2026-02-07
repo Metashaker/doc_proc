@@ -31,9 +31,10 @@ async def _parse_document_with_session(
             status.error_message = "Invalid or corrupted PDF"
             status.processed_at = datetime.utcnow()
             await db.commit()
+        return
+    finally:
         if os.path.exists(file_path):
             os.remove(file_path)
-        return
 
     document = await db.get(Document, document_id)
     if document:
@@ -46,9 +47,6 @@ async def _parse_document_with_session(
         status.status = "completed"
         status.processed_at = datetime.utcnow()
         await db.commit()
-
-    if os.path.exists(file_path):
-        os.remove(file_path)
 
 
 async def create_document(file, db: AsyncSession, background_tasks: BackgroundTasks | None = None) -> Document:
