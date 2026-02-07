@@ -1,4 +1,5 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+from sqlalchemy import text
 from sqlalchemy.orm import declarative_base
 
 from app.config import settings
@@ -18,3 +19,10 @@ async def get_db():
 async def init_db():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        await conn.execute(text("CREATE EXTENSION IF NOT EXISTS pg_trgm;"))
+        await conn.execute(
+            text(
+                "CREATE INDEX IF NOT EXISTS ix_documents_content_trgm "
+                "ON documents USING GIN (content gin_trgm_ops);"
+            )
+        )
